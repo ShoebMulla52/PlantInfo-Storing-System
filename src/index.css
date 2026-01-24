@@ -41,7 +41,7 @@ button {
     font-size: 16px;
     border-radius: 4px;
     transition: background 0.3s;
-    
+
 }
 
 button:hover {
@@ -58,5 +58,15 @@ button:hover {
 .plant-card button {
     background: #c62828;
     margin-top: 5px;
+}
+
+video {
+  margin-top: 10px;
+}
+
+.plant-card img {
+  width: 100%;
+  border-radius: 6px;
+  margin-bottom: 8px;
 }
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 function App() {
   const [plants, setPlants] = useState([]);
@@ -6,51 +6,92 @@ function App() {
   const [type, setType] = useState("");
   const [watering, setWatering] = useState("");
   const [image, setImage] = useState(null);
+  const [cameraOn, setCameraOn] = useState(false);
 
-  // Load plants from localStorage
+  const videoRef = useRef(null);
+  const canvasRef = useRef(null);
+  let streamRef = useRef(null);
+
+  // Load from localStorage
   useEffect(() => {
     const storedPlants = JSON.parse(localStorage.getItem("plants")) || [];
     setPlants(storedPlants);
   }, []);
 
-  // Save plants to localStorage whenever plants change
+  // Save to localStorage
   useEffect(() => {
     localStorage.setItem("plants", JSON.stringify(plants));
   }, [plants]);
 
+  // 📷 Open camera
+  const openCamera = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      streamRef.current = stream;
+      videoRef.current.srcObject = stream;
+      setCameraOn(true);
+    } catch (err) {
+      alert("Camera access denied or not available");
+    }
+  };
+
+  // ❌ Close camera
+  const closeCamera = () => {
+    streamRef.current?.getTracks().forEach(track => track.stop());
+    setCameraOn(false);
+  };
+
+  // 📸 Capture photo
+  const capturePhoto = () => {
+    const canvas = canvasRef.current;
+    const video = videoRef.current;
+
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+
+    const ctx = canvas.getContext("2d");
+    ctx.drawImage(video, 0, 0);
+
+    const imageData = canvas.toDataURL("image/png");
+    setImage(imageData);
+    closeCamera();
+  };
+
+  // 📁 Upload image
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => setImage(reader.result); // Base64 string
-      reader.readAsDataURL(file);
-    }
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onloadend = () => setImage(reader.result);
+    reader.readAsDataURL(file);
   };
 
   const addPlant = () => {
     if (!name || !type || !watering || !image) {
-      alert("Please fill all fields and select an image");
+      alert("Please fill all fields and add an image");
       return;
     }
 
-    const newPlant = {
-      id: Date.now(),
-      name,
-      type,
-      watering,
-      image,
-    };
+    setPlants([
+      ...plants,
+      {
+        id: Date.now(),
+        name,
+        type,
+        watering,
+        image,
+      },
+    ]);
 
-    setPlants([...plants, newPlant]);
     setName("");
     setType("");
     setWatering("");
     setImage(null);
-    document.getElementById("imageInput").value = ""; // reset file input
   };
 
   const deletePlant = (id) => {
-    setPlants(plants.filter((plant) => plant.id !== id));
+    setPlants(plants.filter(p => p.id !== id));
   };
 
   return (
@@ -58,59 +99,52 @@ function App() {
       <h1>🌱 Plant Info Storage System</h1>
 
       <div className="form">
-        <input
-          type="text"
-          placeholder="Plant Name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
+        <input placeholder="Plant Name" value={name} onChange={e => setName(e.target.value)} />
+        <input placeholder="Plant Type" value={type} onChange={e => setType(e.target.value)} />
+        <input placeholder="Watering Schedule" value={watering} onChange={e => setWatering(e.target.value)} />
 
-        <input
-          type="text"
-          placeholder="Plant Type"
-          value={type}
-          onChange={(e) => setType(e.target.value)}
-        />
+        {/* Upload */}
+        <input type="file" accept="image/*" onChange={handleImageUpload} />
 
-        <input
-          type="text"
-          placeholder="Watering Schedule"
-          value={watering}
-          onChange={(e) => setWatering(e.target.value)}
-        />
+        {/* Camera buttons */}
+        {!cameraOn ? (
+          <button onClick={openCamera}>📷 Open Camera</button>
+        ) : (
+          <>
+            <video ref={videoRef} autoPlay style={{ width: "100%", borderRadius: "6px" }} />
+            <button onClick={capturePhoto}>📸 Capture</button>
+            <button onClick={closeCamera}>❌ Close Camera</button>
+          </>
+        )}
 
-        <input
-          type="file"
-          id="imageInput"
-          accept="image/*"
-          onChange={handleImageUpload}
-        />
+        {/* Preview */}
+        {image && (
+          <img
+            src={image}
+            alt="Preview"
+            style={{ width: "100%", marginTop: "10px", borderRadius: "6px" }}
+          />
+        )}
 
         <button onClick={addPlant}>Add Plant</button>
       </div>
 
       <h2>Stored Plants</h2>
-      <div id="plantList">
-        {plants.map((plant) => (
-          <div className="plant-card" key={plant.id}>
-            {plant.image && (
-              <img
-                src={plant.image}
-                alt={plant.name}
-                style={{ width: "100%", borderRadius: "6px" }}
-              />
-            )}
-            <strong>Name:</strong> {plant.name} <br />
-            <strong>Type:</strong> {plant.type} <br />
-            <strong>Watering:</strong> {plant.watering} <br />
-            <button onClick={() => deletePlant(plant.id)}>Delete</button>
-          </div>
-        ))}
-      </div>
+      {plants.map(plant => (
+        <div className="plant-card" key={plant.id}>
+          <img src={plant.image} alt={plant.name} />
+          <strong>Name:</strong> {plant.name} <br />
+          <strong>Type:</strong> {plant.type} <br />
+          <strong>Watering:</strong> {plant.watering} <br />
+          <button onClick={() => deletePlant(plant.id)}>Delete</button>
+        </div>
+      ))}
+
+      <canvas ref={canvasRef} style={{ display: "none" }} />
     </div>
   );
-  
 }
 
 export default App;
+
 

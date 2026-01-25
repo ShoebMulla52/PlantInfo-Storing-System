@@ -29,6 +29,7 @@ function App() {
       const stream = await navigator.mediaDevices.getUserMedia({ video: true });
       streamRef.current = stream;
       videoRef.current.srcObject = stream;
+      await videoRef.current.play()
       setCameraOn(true);
     } catch (err) {
       alert("Camera access denied or not available");

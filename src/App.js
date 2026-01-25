@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 function App() {
   const [plants, setPlants] = useState([]);
@@ -6,11 +6,6 @@ function App() {
   const [type, setType] = useState("");
   const [watering, setWatering] = useState("");
   const [image, setImage] = useState(null);
-  const [cameraOn, setCameraOn] = useState(false);
-
-  const videoRef = useRef(null);
-  const canvasRef = useRef(null);
-  let streamRef = useRef(null);
 
   // Load from localStorage
   useEffect(() => {
@@ -22,41 +17,6 @@ function App() {
   useEffect(() => {
     localStorage.setItem("plants", JSON.stringify(plants));
   }, [plants]);
-
-  // 📷 Open camera
-  const openCamera = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-      streamRef.current = stream;
-      videoRef.current.srcObject = stream;
-      await videoRef.current.play()
-      setCameraOn(true);
-    } catch (err) {
-      alert("Camera access denied or not available");
-    }
-  };
-
-  // ❌ Close camera
-  const closeCamera = () => {
-    streamRef.current?.getTracks().forEach(track => track.stop());
-    setCameraOn(false);
-  };
-
-  // 📸 Capture photo
-  const capturePhoto = () => {
-    const canvas = canvasRef.current;
-    const video = videoRef.current;
-
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-
-    const ctx = canvas.getContext("2d");
-    ctx.drawImage(video, 0, 0);
-
-    const imageData = canvas.toDataURL("image/png");
-    setImage(imageData);
-    closeCamera();
-  };
 
   // 📁 Upload image
   const handleImageUpload = (e) => {
@@ -92,7 +52,7 @@ function App() {
   };
 
   const deletePlant = (id) => {
-    setPlants(plants.filter(p => p.id !== id));
+    setPlants(plants.filter((p) => p.id !== id));
   };
 
   return (
@@ -100,23 +60,24 @@ function App() {
       <h1>🌱 Plant Info Storage System</h1>
 
       <div className="form">
-        <input placeholder="Plant Name" value={name} onChange={e => setName(e.target.value)} />
-        <input placeholder="Plant Type" value={type} onChange={e => setType(e.target.value)} />
-        <input placeholder="Watering Schedule" value={watering} onChange={e => setWatering(e.target.value)} />
+        <input
+          placeholder="Plant Name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+        />
+        <input
+          placeholder="Plant Type"
+          value={type}
+          onChange={(e) => setType(e.target.value)}
+        />
+        <input
+          placeholder="Watering Schedule"
+          value={watering}
+          onChange={(e) => setWatering(e.target.value)}
+        />
 
-        {/* Upload */}
+        {/* Image upload only */}
         <input type="file" accept="image/*" onChange={handleImageUpload} />
-
-        {/* Camera buttons */}
-        {!cameraOn ? (
-          <button onClick={openCamera}>📷 Open Camera</button>
-        ) : (
-          <>
-            <video ref={videoRef} autoPlay style={{ width: "100%", borderRadius: "6px" }} />
-            <button onClick={capturePhoto}>📸 Capture</button>
-            <button onClick={closeCamera}>❌ Close Camera</button>
-          </>
-        )}
 
         {/* Preview */}
         {image && (
@@ -131,7 +92,7 @@ function App() {
       </div>
 
       <h2>Stored Plants</h2>
-      {plants.map(plant => (
+      {plants.map((plant) => (
         <div className="plant-card" key={plant.id}>
           <img src={plant.image} alt={plant.name} />
           <strong>Name:</strong> {plant.name} <br />
@@ -140,12 +101,11 @@ function App() {
           <button onClick={() => deletePlant(plant.id)}>Delete</button>
         </div>
       ))}
-
-      <canvas ref={canvasRef} style={{ display: "none" }} />
     </div>
   );
 }
 
 export default App;
+
 
 

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import Login from "./Login";
 
 function App() {
   const [plants, setPlants] = useState([]);
@@ -6,6 +7,24 @@ function App() {
   const [type, setType] = useState("");
   const [watering, setWatering] = useState("");
   const [image, setImage] = useState(null);
+
+  // Auth state (persisted to localStorage)
+  const [isLoggedIn, setIsLoggedIn] = useState(() => localStorage.getItem("loggedIn") === "true");
+  const [user, setUser] = useState(() => localStorage.getItem("user") || "");
+
+  const handleLogin = (username) => {
+    setIsLoggedIn(true);
+    setUser(username);
+    localStorage.setItem("loggedIn", "true");
+    localStorage.setItem("user", username);
+  };
+
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+    setUser("");
+    localStorage.removeItem("loggedIn");
+    localStorage.removeItem("user");
+  };
 
   // Load from localStorage
   useEffect(() => {
@@ -55,9 +74,21 @@ function App() {
     setPlants(plants.filter((p) => p.id !== id));
   };
 
+  if (!isLoggedIn) {
+    return <Login onLogin={handleLogin} />;
+  }
+
   return (
     <div className="container">
-      <h1>🌱 Plant Info Storage System</h1>
+      <div className="header-row">
+        <h1>🌱 Plant Info Storing System</h1>
+        <div>
+          <span style={{ marginRight: "12px", fontWeight: "600" }}>Welcome, {user}</span>
+          <button className="logout-btn" onClick={handleLogout}>
+            Logout
+          </button>
+        </div>
+      </div>
 
       <div className="form">
         <input

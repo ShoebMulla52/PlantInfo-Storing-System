@@ -70,3 +70,27 @@ video {
   margin-bottom: 8px;
 }
 
+.login-container {
+  max-width: 420px;
+  margin-top: 80px;
+  text-align: center;
+}
+
+.header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logout-btn {
+  background: #c62828;
+  padding: 8px 12px;
+  border-radius: 4px;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.header-row .logout-btn:hover {
+  background: #a41616;
+}

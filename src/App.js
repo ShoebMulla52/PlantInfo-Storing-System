@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import Login from "./Login";
 
 function App() {
@@ -11,6 +11,19 @@ function App() {
   // Auth state (persisted to localStorage)
   const [isLoggedIn, setIsLoggedIn] = useState(() => localStorage.getItem("loggedIn") === "true");
   const [user, setUser] = useState(() => localStorage.getItem("user") || "");
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef(null);
+
+  // Close menu when clicking outside
+  useEffect(() => {
+    const handler = (e) => {
+      if (menuRef.current && !menuRef.current.contains(e.target)) {
+        setMenuOpen(false);
+      }
+    };
+    document.addEventListener("click", handler);
+    return () => document.removeEventListener("click", handler);
+  }, []);
 
   const handleLogin = (username) => {
     setIsLoggedIn(true);
@@ -82,11 +95,24 @@ function App() {
     <div className="container">
       <div className="header-row">
         <h1>🌱 Plant Info Storing System</h1>
-        <div>
-          <span style={{ marginRight: "12px", fontWeight: "600" }}>Welcome, {user}</span>
-          <button className="logout-btn" onClick={handleLogout}>
-            Logout
+        <div ref={menuRef} style={{ position: "relative", display: "flex", alignItems: "center", gap: "12px" }}>
+          <span style={{ fontWeight: "600" }}>Welcome, {user}</span>
+
+          <button
+            className="menu-btn"
+            aria-label="Open menu"
+            onClick={() => setMenuOpen((s) => !s)}
+          >
+            ⋯
           </button>
+
+          {menuOpen && (
+            <div className="menu-dropdown">
+              <button className="logout-btn" onClick={() => { setMenuOpen(false); handleLogout(); }}>
+                Logout
+              </button>
+            </div>
+          )}
         </div>
       </div>
 

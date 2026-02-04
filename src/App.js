@@ -168,7 +168,7 @@ function App() {
       <div className="header-row">
         <h1>🌱 Plant Info Storing System</h1>
         <div ref={menuRef} style={{ position: "relative", display: "flex", alignItems: "center", gap: "12px" }}>
-          <span style={{ fontWeight: "600" }}>Welcome, {user}</span>
+          <span style={{ fontWeight: "600" }}>Welcome back, {user}</span>
 
           <button
             className="menu-btn"

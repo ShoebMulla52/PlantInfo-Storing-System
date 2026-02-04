@@ -131,6 +131,7 @@ export default function Login({ onLogin }) {
                   <button className="link-btn" onClick={() => setIsSigningUp(false)}>
                     Log In
                   </button>
+                
                 </>
               ) : (
                 <>
@@ -158,4 +159,4 @@ export default function Login({ onLogin }) {
       </div>
     </div>
   );
-}
+}                                       

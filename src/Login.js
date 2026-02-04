@@ -78,64 +78,84 @@ export default function Login({ onLogin }) {
   };
 
   return (
-    <div className="container login-container">
-      <h1>{isSigningUp ? "📝 Sign Up" : "🔐 Log In"}</h1>
+    <div className="auth-page">
+      <div className="auth-card container">
+        <div className="info-panel" aria-hidden="true">
+          <h1>PlantInfo 🌿</h1>
+          <p className="lead">Store photos, species details, care notes, and schedules for all your plants — accessible on any device.</p>
 
-      <form className="form" onSubmit={isSigningUp ? handleSignUp : handleLogin}>
-        <input
-          placeholder="Username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-        />
+          <ul className="benefits">
+            <li><strong>Complete profiles</strong> — photos & care history</li>
+            <li><strong>Care reminders</strong> — watering & fertilizing alerts</li>
+            <li><strong>Search & organize</strong> — tags, filters & quick search</li>
+            <li><strong>Secure backups</strong> — encrypted sync & automatic backups</li>
+          </ul>
 
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
+          <p className="trust">Privacy-first design, industry-standard encryption, and helpful support when you need it.</p>
+        </div>
 
-        {isSigningUp && (
-          <input
-            type="password"
-            placeholder="Confirm Password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-          />
-        )}
+        <div className="login-panel">
+          <div className="container login-container">
+            <h1>{isSigningUp ? "📝 Sign Up" : "🔐 Log In"}</h1>
 
-        <button type="submit">{isSigningUp ? "Sign Up" : "Log In"}</button>
-      </form>
+            <form className="form" onSubmit={isSigningUp ? handleSignUp : handleLogin}>
+              <input
+                placeholder="Username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+              />
 
-      <div style={{ marginTop: "12px" }}>
-        {isSigningUp ? (
-          <>
-            <span>Already have an account? </span>
-            <button className="link-btn" onClick={() => setIsSigningUp(false)}>
-              Log In
-            </button>
-          </>
-        ) : (
-          <>
-            <span>Don't have an account? </span>
-            <button className="link-btn" onClick={() => setIsSigningUp(true)}>
-              Sign Up
-            </button>
-          </>
-        )}
+              <input
+                type="password"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+
+              {isSigningUp && (
+                <input
+                  type="password"
+                  placeholder="Confirm Password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                />
+              )}
+
+              <button type="submit">{isSigningUp ? "Sign Up" : "Log In"}</button>
+            </form>
+
+            <div style={{ marginTop: "12px" }}>
+              {isSigningUp ? (
+                <>
+                  <span>Already have an account? </span>
+                  <button className="link-btn" onClick={() => setIsSigningUp(false)}>
+                    Log In
+                  </button>
+                </>
+              ) : (
+                <>
+                  <span>Don't have an account? </span>
+                  <button className="link-btn" onClick={() => setIsSigningUp(true)}>
+                    Sign Up
+                  </button>
+                </>
+              )}
+            </div>
+
+            <style>{`
+              .link-btn {
+                background: none;
+                border: none;
+                color: #1a73e8;
+                cursor: pointer;
+                padding: 0;
+                margin-left: 6px;
+                text-decoration: underline;
+              }
+            `}</style>
+          </div>
+        </div>
       </div>
-
-      <style>{`
-        .link-btn {
-          background: none;
-          border: none;
-          color: #1a73e8;
-          cursor: pointer;
-          padding: 0;
-          margin-left: 6px;
-          text-decoration: underline;
-        }
-      `}</style>
     </div>
   );
 }
